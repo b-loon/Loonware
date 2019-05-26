@@ -8,3 +8,6 @@
 #include "loonw_timekeeper17.h"
 
 
+bool TimeKeeper::init () {
+	return true;
+}

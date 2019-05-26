@@ -5,8 +5,9 @@
  *      Author: chapd
  */
 #include <functional>
-#include <iostream>
 #include <stdint.h>
+#include "stm32l0xx_hal.h"
+#include "stm32l0xx_hal_lptim.h"
 
 #ifndef LOONWARE_INC_LOONW_TIMEKEEPER17_H_
 #define LOONWARE_INC_LOONW_TIMEKEEPER17_H_
@@ -61,12 +62,14 @@ public:
 	//	Driver API
 	//
 	/////////////
-	TimeKeeper() : state_(DriverState::kUninitialized) {};
+	TimeKeeper(LPTIM_HandleTypeDef * lptim) : state_(DriverState::kUninitialized) {
+		LPTIMx = lptim;
+	};
 	~TimeKeeper() {};
 	// initializer for the driver
 	bool init();
 	// Reports the Driver State
-	DriverState getState();
+	DriverState getState()  {return state_;};
 	//////////////
 	//
 	//	Alarm Scheduler API
@@ -86,6 +89,7 @@ public:
 
 protected:
 	DriverState state_;
+	LPTIM_HandleTypeDef * LPTIMx;
 };
 
 
