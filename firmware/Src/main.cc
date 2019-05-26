@@ -53,7 +53,7 @@ RTC_HandleTypeDef hrtc;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+TimeKeeper myTimers(&hlptim1);
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,7 +108,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  TimeKeeper myTimers(&hlptim1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

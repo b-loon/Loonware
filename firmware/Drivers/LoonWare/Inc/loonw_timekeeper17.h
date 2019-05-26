@@ -28,13 +28,14 @@ enum class LPAlarmState {
 	kUninitialized = 1,
 	kActive = 2,
 	kSlept = 3,
+	kErrorOverFlow = 4,
+	kErrorInvalid = 5,
 };
 
 class LPAlarm {
-	LPAlarm(uint16_t delay, bool recur) : state_(LPAlarmState::kUninitialized) {
-		delay_ticks = delay;
-		recurring = recur;
-	}
+	friend class TimeKeeper;
+public:
+	LPAlarm() : state_(LPAlarmState::kUninitialized) {}
 	// when we time out do we go again?
 	bool recurring;
 	// Callback when your LPAlarm Expires
@@ -65,7 +66,9 @@ public:
 	TimeKeeper(LPTIM_HandleTypeDef * lptim) : state_(DriverState::kUninitialized) {
 		LPTIMx = lptim;
 	};
-	~TimeKeeper() {};
+	~TimeKeeper() {
+		delete [] lpalarm_array;
+	};
 	// initializer for the driver
 	bool init();
 	// Reports the Driver State
@@ -76,20 +79,24 @@ public:
 	//
 	/////////////
 	// Adds an alarm to our TimeKeeper
-	// updates LPAlarm with a unique ID
-	bool addAlarm(LPAlarm * alarm);
+	// and updates LPAlarm with a unique ID.
+	LPAlarmState addAlarm(LPAlarm * alarm);
 	// temporarily sleep alarm
-	bool sleepAlarm(LPAlarm * alarm);
+	LPAlarmState sleepAlarm(LPAlarm * alarm);
 	// Resume slept alarm
-	bool resumeAlarm(LPAlarm * alarm);
+	LPAlarmState resumeAlarm(LPAlarm * alarm);
 
 	bool stopAlarms();
 	bool resumeAlarms();
 
+private:
+	// the ones that do the actual heavy lifting
+	void setNextWakeEvent();
 
-protected:
 	DriverState state_;
 	LPTIM_HandleTypeDef * LPTIMx;
+	uint8_t timerid_watermark;
+	LPAlarm ** lpalarm_array;
 };
 
 
